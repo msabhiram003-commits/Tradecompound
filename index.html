@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#07130f">
+  <meta name="description" content="A private, local-first NSE and BSE options trading journal.">
+  <meta name="robots" content="noindex,nofollow">
+  <title>TradeCompound — Indian Options Journal</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#overview" aria-label="TradeCompound home">
+        <span class="brand-mark">TC</span>
+        <span><strong>TradeCompound</strong><small>Options journal</small></span>
+      </a>
+
+      <nav class="main-nav" aria-label="Main navigation">
+        <button class="nav-item active" data-view="overview"><span>⌂</span> Overview</button>
+        <button class="nav-item" data-view="trades"><span>↕</span> Trade log</button>
+        <button class="nav-item" data-view="calendar"><span>□</span> P&amp;L calendar</button>
+        <button class="nav-item" data-view="review"><span>✓</span> Daily review</button>
+        <button class="nav-item" data-view="settings"><span>⚙</span> Settings</button>
+      </nav>
+
+      <section class="side-risk" aria-labelledby="risk-title">
+        <div class="eyebrow" id="risk-title">TODAY'S RISK</div>
+        <div class="risk-row"><span>Loss used</span><strong id="risk-used">₹0</strong></div>
+        <div class="progress"><span id="risk-progress"></span></div>
+        <p id="risk-message">No trades recorded today.</p>
+      </section>
+
+      <div class="sidebar-footer">
+        <span class="privacy-dot"></span>
+        <span><strong>Local &amp; private</strong><small>Data stays in this browser</small></span>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="icon-button mobile-menu" id="menu-button" aria-label="Open menu">☰</button>
+        <div>
+          <p class="eyebrow" id="today-label"></p>
+          <h1 id="page-title">Trading overview</h1>
+        </div>
+        <div class="top-actions">
+          <button class="icon-button" id="theme-button" aria-label="Toggle theme">◐</button>
+          <button class="button primary" id="add-trade-button"><span>＋</span> Add trade</button>
+        </div>
+      </header>
+
+      <div class="view active" id="view-overview">
+        <section class="welcome-row">
+          <div>
+            <h2 id="welcome-title">Good evening, Trader</h2>
+            <p>Focus on process. The dashboard will take care of the numbers.</p>
+          </div>
+          <label class="compact-field">Period
+            <select id="overview-period">
+              <option value="30">Last 30 days</option>
+              <option value="month">This month</option>
+              <option value="90">Last 90 days</option>
+              <option value="all">All time</option>
+            </select>
+          </label>
+        </section>
+
+        <section class="kpi-grid" aria-label="Trading performance summary">
+          <article class="kpi-card accent"><div><span>Net P&amp;L</span><small id="return-pct">0.00% on capital</small></div><strong id="kpi-net">₹0</strong></article>
+          <article class="kpi-card"><div><span>Win rate</span><small id="win-count">0 wins / 0 trades</small></div><strong id="kpi-winrate">0%</strong></article>
+          <article class="kpi-card"><div><span>Profit factor</span><small>Gross profit ÷ loss</small></div><strong id="kpi-pf">0.00</strong></article>
+          <article class="kpi-card"><div><span>Average R</span><small>Return per planned risk</small></div><strong id="kpi-r">0.00R</strong></article>
+          <article class="kpi-card"><div><span>Max drawdown</span><small>Peak-to-trough decline</small></div><strong id="kpi-dd">₹0</strong></article>
+          <article class="kpi-card"><div><span>Plan adherence</span><small>Rule-following trades</small></div><strong id="kpi-discipline">0%</strong></article>
+        </section>
+
+        <section class="dashboard-grid">
+          <article class="card chart-card span-2">
+            <div class="card-heading"><div><p class="eyebrow">PERFORMANCE</p><h3>Equity curve</h3></div><div class="chart-legend"><span></span> Closing equity</div></div>
+            <svg id="equity-chart" class="line-chart" role="img" aria-label="Account equity chart"></svg>
+          </article>
+          <article class="card process-card">
+            <div class="card-heading"><div><p class="eyebrow">PROCESS EDGE</p><h3>Discipline pulse</h3></div></div>
+            <div class="discipline-ring" id="discipline-ring"><strong id="ring-value">0%</strong><span>followed plan</span></div>
+            <div class="mini-stat-grid">
+              <div><span>Expectancy</span><strong id="expectancy-value">₹0</strong></div>
+              <div><span>Avg. hold</span><strong id="hold-value">0m</strong></div>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-heading"><div><p class="eyebrow">WHERE YOU WIN</p><h3>P&amp;L by underlying</h3></div></div>
+            <div id="underlying-chart" class="bar-chart"></div>
+          </article>
+          <article class="card">
+            <div class="card-heading"><div><p class="eyebrow">SETUP QUALITY</p><h3>Strategy leaderboard</h3></div></div>
+            <div id="strategy-list" class="performance-list"></div>
+          </article>
+          <article class="card span-2">
+            <div class="card-heading"><div><p class="eyebrow">LATEST EXECUTIONS</p><h3>Recent trades</h3></div><button class="text-button" data-go="trades">View all →</button></div>
+            <div class="table-wrap"><table><thead><tr><th>Date</th><th>Contract</th><th>Setup</th><th>Qty</th><th>Net P&amp;L</th><th>R</th><th>Plan</th></tr></thead><tbody id="recent-trades"></tbody></table></div>
+          </article>
+        </section>
+
+        <section class="empty-state" id="overview-empty" hidden>
+          <div class="empty-icon">↗</div><h2>Turn your trades into an edge</h2>
+          <p>Add your first options trade, or load sample data to explore every dashboard.</p>
+          <div><button class="button primary" data-add-trade>Add first trade</button><button class="button secondary" id="sample-data-button">Load sample data</button></div>
+        </section>
+      </div>
+
+      <div class="view" id="view-trades">
+        <section class="toolbar card">
+          <div class="search-box"><span>⌕</span><input id="trade-search" type="search" placeholder="Search contract, setup or notes…"></div>
+          <label>Exchange<select id="filter-exchange"><option value="">All</option><option>NSE</option><option>BSE</option></select></label>
+          <label>Outcome<select id="filter-outcome"><option value="">All</option><option>Win</option><option>Loss</option><option>Flat</option></select></label>
+          <label>From<input id="filter-from" type="date"></label>
+          <label>To<input id="filter-to" type="date"></label>
+          <button class="button secondary" id="clear-filters">Clear</button>
+        </section>
+        <section class="trade-summary-strip">
+          <div><span>Filtered trades</span><strong id="filtered-count">0</strong></div>
+          <div><span>Net P&amp;L</span><strong id="filtered-pnl">₹0</strong></div>
+          <div><span>Win rate</span><strong id="filtered-winrate">0%</strong></div>
+          <div><span>Estimated charges</span><strong id="filtered-charges">₹0</strong></div>
+          <div class="strip-actions"><button class="button secondary" id="import-button">Import CSV</button><button class="button secondary" id="export-button">Export CSV</button></div>
+        </section>
+        <section class="card table-card">
+          <div class="table-wrap trade-table-wrap"><table class="trade-table"><thead><tr><th>Date &amp; time</th><th>Contract</th><th>Buy → sell</th><th>Qty</th><th>Gross</th><th>Charges</th><th>Net P&amp;L</th><th>R</th><th>Setup</th><th>Grade</th><th></th></tr></thead><tbody id="all-trades"></tbody></table></div>
+          <div class="table-empty" id="trade-table-empty" hidden>No trades match these filters.</div>
+        </section>
+        <input type="file" id="csv-file" accept=".csv,text/csv" hidden>
+      </div>
+
+      <div class="view" id="view-calendar">
+        <section class="calendar-top">
+          <div class="month-navigation"><button class="icon-button" id="prev-month" aria-label="Previous month">←</button><h2 id="calendar-month"></h2><button class="icon-button" id="next-month" aria-label="Next month">→</button></div>
+          <div class="month-kpis"><span>Monthly P&amp;L <strong id="month-pnl">₹0</strong></span><span>Green days <strong id="green-days">0</strong></span><span>Red days <strong id="red-days">0</strong></span></div>
+        </section>
+        <section class="card calendar-card">
+          <div class="weekday-row"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+          <div class="calendar-grid" id="calendar-grid"></div>
+        </section>
+        <section class="card calendar-insights"><div><p class="eyebrow">MONTHLY NOTE</p><h3 id="calendar-insight-title">No trades yet</h3><p id="calendar-insight-text">Your strongest and weakest days will appear here.</p></div><div id="weekday-performance" class="weekday-performance"></div></section>
+      </div>
+
+      <div class="view" id="view-review">
+        <section class="review-layout">
+          <form class="card review-form" id="review-form">
+            <div class="card-heading"><div><p class="eyebrow">PROCESS BEFORE OUTCOME</p><h2>Daily trading review</h2></div><input type="date" id="review-date" name="date" required></div>
+            <fieldset><legend>Pre-market checklist</legend><div class="check-grid">
+              <label><input type="checkbox" name="checkedEvents"> Checked events &amp; news</label>
+              <label><input type="checkbox" name="markedLevels"> Marked key levels</label>
+              <label><input type="checkbox" name="definedBias"> Defined market bias</label>
+              <label><input type="checkbox" name="acceptedRisk"> Accepted today's max loss</label>
+            </div></fieldset>
+            <div class="form-grid two">
+              <label>Today's market view<textarea name="marketView" rows="3" placeholder="Trend, important levels, volatility…"></textarea></label>
+              <label>My trading plan<textarea name="tradingPlan" rows="3" placeholder="Only take A setups. No chasing…"></textarea></label>
+            </div>
+            <div class="form-grid three">
+              <label>Daily risk ₹<input type="number" name="dailyRisk" min="0" step="1"></label>
+              <label>Maximum trades<input type="number" name="maxTrades" min="0" step="1"></label>
+              <label>Energy / focus<select name="focus"><option>High</option><option selected>Normal</option><option>Low</option><option>Do not trade</option></select></label>
+            </div>
+            <label>What went well?<textarea name="wentWell" rows="3" placeholder="Process wins—not only profitable trades"></textarea></label>
+            <label>What must improve?<textarea name="improve" rows="3" placeholder="One specific behavior to change"></textarea></label>
+            <label>Rule for the next session<input name="nextRule" placeholder="Example: Wait for candle close before entry"></label>
+            <div class="form-actions"><span id="review-save-status">Saved only in this browser</span><button class="button primary" type="submit">Save daily review</button></div>
+          </form>
+          <aside class="review-sidebar">
+            <article class="card session-score"><p class="eyebrow">SESSION SCORE</p><div class="score-value"><strong id="review-score">0</strong><span>/ 100</span></div><p id="review-score-note">Complete your checklist and record trades to calculate a process score.</p></article>
+            <article class="card"><div class="card-heading"><div><p class="eyebrow">RECENT NOTES</p><h3>Review history</h3></div></div><div id="review-history" class="review-history"></div></article>
+          </aside>
+        </section>
+      </div>
+
+      <div class="view" id="view-settings">
+        <form id="settings-form" class="settings-layout">
+          <section class="card settings-card"><div class="card-heading"><div><p class="eyebrow">ACCOUNT</p><h2>Capital &amp; risk guardrails</h2></div></div>
+            <div class="form-grid two"><label>Your name<input name="traderName"></label><label>Starting capital ₹<input name="startingCapital" type="number" min="0" step="1000"></label><label>Daily loss limit ₹<input name="dailyLossLimit" type="number" min="0" step="100"></label><label>Maximum risk per trade ₹<input name="maxRiskPerTrade" type="number" min="0" step="100"></label><label>Maximum trades per day<input name="maxTradesPerDay" type="number" min="1" step="1"></label></div>
+          </section>
+          <section class="card settings-card"><div class="card-heading"><div><p class="eyebrow">COST ESTIMATOR</p><h2>Broker &amp; statutory charges</h2></div><span class="status-pill warning">Editable estimates</span></div>
+            <div class="form-grid three"><label>Brokerage / order ₹<input name="brokeragePerOrder" type="number" min="0" step="0.01"></label><label>NSE transaction charge %<input name="nseTransactionPct" type="number" min="0" step="0.00001"></label><label>BSE transaction charge %<input name="bseTransactionPct" type="number" min="0" step="0.00001"></label><label>STT on sell premium %<input name="sttSellPct" type="number" min="0" step="0.001"></label><label>SEBI fee ₹ / crore<input name="sebiRatePerCrore" type="number" min="0" step="0.01"></label><label>IPFT fee ₹ / crore<input name="ipftRatePerCrore" type="number" min="0" step="0.01"></label><label>Stamp duty on buy %<input name="stampBuyPct" type="number" min="0" step="0.001"></label><label>GST %<input name="gstPct" type="number" min="0" step="0.01"></label></div>
+            <div class="info-box"><strong>Use your contract note as the final record.</strong><p>Defaults are a practical estimate for long equity-option trades. Broker plans, BSE products, taxes, exercise/assignment and exchange revisions can change the actual amount.</p></div>
+          </section>
+          <section class="card settings-card data-card"><div><p class="eyebrow">DATA CONTROL</p><h2>Backup and reset</h2><p>Export regularly. Browser data can be lost if you clear site storage.</p></div><div><button class="button secondary" type="button" id="json-export">Download full backup</button><button class="button danger" type="button" id="reset-data">Delete local data</button></div></section>
+          <div class="sticky-save"><span id="settings-status">Changes are local to this device.</span><button class="button primary" type="submit">Save settings</button></div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <dialog id="trade-dialog" class="trade-dialog">
+    <form method="dialog" id="trade-form">
+      <header class="dialog-header"><div><p class="eyebrow">OPTIONS EXECUTION</p><h2 id="trade-dialog-title">Add a trade</h2></div><button class="icon-button" value="cancel" aria-label="Close">×</button></header>
+      <div class="dialog-body">
+        <input type="hidden" name="id">
+        <section class="form-section"><h3>1. Contract</h3><div class="form-grid four">
+          <label>Trade date<input name="date" type="date" required></label>
+          <label>Exchange<select name="exchange" required><option>NSE</option><option>BSE</option></select></label>
+          <label>Underlying<input name="underlying" list="underlying-list" placeholder="NIFTY" required><datalist id="underlying-list"><option>NIFTY</option><option>BANKNIFTY</option><option>FINNIFTY</option><option>MIDCPNIFTY</option><option>SENSEX</option><option>BANKEX</option></datalist></label>
+          <label>Expiry<input name="expiry" type="date" required></label>
+          <label>Strike<input name="strike" type="number" min="0" step="0.05" required></label>
+          <label>Option type<select name="optionType" required><option>CE</option><option>PE</option></select></label>
+          <label>Lots<input name="lots" type="number" min="1" step="1" value="1" required></label>
+          <label>Lot size<input name="lotSize" type="number" min="1" step="1" value="65" required></label>
+        </div></section>
+        <section class="form-section"><h3>2. Entry, exit &amp; risk</h3><div class="form-grid four">
+          <label>Entry time<input name="entryTime" type="time" required></label><label>Buy price ₹<input name="entryPrice" type="number" min="0" step="0.05" required></label>
+          <label>Exit time<input name="exitTime" type="time" required></label><label>Sell price ₹<input name="exitPrice" type="number" min="0" step="0.05" required></label>
+          <label>Initial stop ₹<input name="stopLoss" type="number" min="0" step="0.05"></label><label>Planned target ₹<input name="target" type="number" min="0" step="0.05"></label>
+          <label>Planned risk ₹<input name="plannedRisk" type="number" min="0" step="1" placeholder="Auto from stop"></label><label>Executed orders<input name="executedOrders" type="number" min="1" step="1" value="2"></label>
+          <label>Actual charges ₹<input name="manualCharges" type="number" min="0" step="0.01" placeholder="Blank = estimate"></label>
+        </div><div class="trade-preview" id="trade-preview"><span>Quantity <strong>0</strong></span><span>Gross P&amp;L <strong>₹0</strong></span><span>Charges <strong>₹0</strong></span><span>Net P&amp;L <strong>₹0</strong></span><span>R multiple <strong>—</strong></span></div></section>
+        <section class="form-section"><h3>3. Setup &amp; psychology</h3><div class="form-grid three">
+          <label>Strategy<input name="strategy" placeholder="Momentum"></label><label>Setup<input name="setup" placeholder="VWAP reclaim"></label><label>Market bias<select name="marketBias"><option>Neutral</option><option>Bullish</option><option>Bearish</option><option>Range</option></select></label>
+          <label>Emotion before<select name="emotionBefore"><option>Calm</option><option>Confident</option><option>Hesitant</option><option>FOMO</option><option>Revenge</option><option>Tired</option></select></label><label>Emotion after<select name="emotionAfter"><option>Calm</option><option>Satisfied</option><option>Frustrated</option><option>Regretful</option><option>Overconfident</option></select></label><label>Trade grade<select name="grade"><option>A</option><option selected>B</option><option>C</option><option>D</option></select></label>
+        </div><div class="form-grid two"><label>Mistake / rule broken<textarea name="mistakes" rows="2" placeholder="Leave blank if execution was clean"></textarea></label><label>Trade notes<textarea name="notes" rows="2" placeholder="Why did you enter and exit?"></textarea></label></div><label class="plan-check"><input name="followedPlan" type="checkbox" checked> I followed my written trading plan</label></section>
+      </div>
+      <footer class="dialog-footer"><span>Long option trade · estimated charges</span><div><button class="button secondary" value="cancel">Cancel</button><button class="button primary" id="save-trade" value="default">Save trade</button></div></footer>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
