@@ -1,0 +1,2 @@
+date,exchange,underlying,expiry,strike,optionType,entryTime,exitTime,entryPrice,exitPrice,lots,lotSize,executedOrders,stopLoss,target,plannedRisk,strategy,setup,marketBias,followedPlan,grade,emotionBefore,emotionAfter,mistakes,notes,manualCharges
+2026-08-07,NSE,NIFTY,2026-08-11,25000,CE,09:35,10:12,105.50,138.25,1,65,2,85,145,,Momentum,VWAP reclaim,Bullish,true,A,Calm,Satisfied,,Example row—delete before importing,
